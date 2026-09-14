@@ -8,6 +8,6 @@ sky:
     password: 44080928@@
   alioss:
     endpoint: oss-cn-shenzhen.aliyuncs.com
-    access-key-id: LTAI5t7ZH8u1shH7eLmYdSDM
-    access-key-secret: 9vY8mgGy2BCNoUynpNc5EivkY7eVwc
+    access-key-id: ${OSS_ACCESS_KEY_ID}
+    access-key-secret: ${OSS_ACCESS_KEY_SECRET}
     bucket-name: sky--takeout233

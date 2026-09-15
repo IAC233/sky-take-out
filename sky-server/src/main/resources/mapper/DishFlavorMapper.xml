@@ -5,10 +5,10 @@
 
 
     <insert id="insertBatch">
-        insert into dish_flavor (dish_id, name, value, type)
+        insert into dish_flavor (dish_id, name, value)
         values
         <foreach collection="flavors" item="item" separator=",">
-            (#{item.dishId}, #{item.name}, #{item.value}, #{item.type})
+            (#{item.dishId}, #{item.name}, #{item.value})
         </foreach>
     </insert>
 </mapper>

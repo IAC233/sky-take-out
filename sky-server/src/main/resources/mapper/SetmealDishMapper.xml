@@ -10,6 +10,17 @@
             (#{setmealDish.setmealId}, #{setmealDish.dishId}, #{setmealDish.name}, #{setmealDish.price}, #{setmealDish.copies})
         </foreach>
     </insert>
+    <delete id="deleteBySetmealIds">
+        delete from setmeal_dish
+        where setmeal_id in
+        <foreach item="id" collection="ids" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteBySetmealId">
+        delete from setmeal_dish
+        where setmeal_id = #{setmealId}
+    </delete>
 
 
     <select id="getSetmealDishIdsByDishIds" resultType="java.lang.Long">

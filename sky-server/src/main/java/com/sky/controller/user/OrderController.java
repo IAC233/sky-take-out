@@ -52,10 +52,24 @@ public class OrderController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 用户查看订单详情
+     * @param id
+     * @return
+     */
     @GetMapping("/orderDetail/{id}")
     @ApiOperation("用户查看订单详情")
     public Result<OrderVO> getOrderDetail(@PathVariable("id") Long id) {
         OrderVO orderVO = orderService.details(id);
         return Result.success(orderVO);
     }
+
+
+    @PostMapping("/repetition/{id}")
+    @ApiOperation("再来一单")
+    public Result repetition(@PathVariable Long id) {
+        orderService.repetition(id);
+        return Result.success();
+    }
+
 }

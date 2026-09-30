@@ -36,4 +36,6 @@ public interface OrderMapper {
      */
     @Select("select count(id) from orders where status = #{status}")
     Integer countByStatus(Integer toBeConfirmed);
+
+    void update(Orders orders);
 }

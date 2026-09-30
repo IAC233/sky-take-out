@@ -1,5 +1,6 @@
 package com.sky.controller.admin;
 
+import com.sky.vo.OrderStatisticsVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.sky.service.OrderService;
@@ -27,5 +28,12 @@ public class OrderController {
     public Result<PageResult> conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
         PageResult pageResult = orderService.conditionSearch(ordersPageQueryDTO);
         return Result.success();
+    }
+
+    @GetMapping("/statistics")
+    @ApiOperation("订单统计")
+    public Result<OrderStatisticsVO> statistics() {
+        OrderStatisticsVO orderStatisticsVO = orderService.statistics();
+        return Result.success(orderStatisticsVO);
     }
 }

@@ -25,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -101,6 +102,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 分页查询当前用户订单
+     *
      * @param pageNum
      * @param pageSize
      * @param status
@@ -119,8 +121,8 @@ public class OrderServiceImpl implements OrderService {
         List<OrderVO> list = new ArrayList<>();
 
         //查询订单明细，封装VO进行响应
-        if (page != null && page.getTotal() > 0){
-            for (Orders orders : page){
+        if (page != null && page.getTotal() > 0) {
+            for (Orders orders : page) {
                 Long orderId = orders.getId();
                 List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orderId);
                 OrderVO orderVO = new OrderVO();
@@ -135,7 +137,8 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 根据id查询订单详情
-      * @param id
+     *
+     * @param id
      * @return
      */
     @Override
@@ -150,6 +153,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 再来一单
+     *
      * @param id
      */
     @Override
@@ -161,7 +165,7 @@ public class OrderServiceImpl implements OrderService {
         //将订单详情转换为购物车对象
         List<ShoppingCart> shoppingCartList = orderDetailList.stream().map(x -> {
             ShoppingCart shoppingCart = new ShoppingCart();
-        //将原订单复制到购物车对象
+            //将原订单复制到购物车对象
             BeanUtils.copyProperties(x, shoppingCart, "id");
             shoppingCart.setUserId(userId);
             shoppingCart.setCreateTime(LocalDateTime.now());
@@ -170,4 +174,56 @@ public class OrderServiceImpl implements OrderService {
         //批量添加数据库
         shoppingCartMapper.insertBatch(shoppingCartList);
     }
+
+    /**
+     * 订单搜索
+     *
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        //设置分页
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
+        //部分订单状态需要返回订单菜品信息，将orders转换为VO对象
+        List<OrderVO> orderVOList = getOrderList(page);
+        return new PageResult(page.getTotal(), orderVOList);
+    }
+
+    /**
+     * 根据订单列表获取订单VO列表
+     * @param page
+     * @return
+     */
+
+    private List<OrderVO> getOrderList(Page<Orders> page) {
+        List<OrderVO> orderVOList = new ArrayList<>();
+        List<Orders> ordersList = page.getResult();
+        if (!CollectionUtils.isEmpty(ordersList)){
+            for (Orders orders : ordersList) {
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(orders, orderVO);
+                String orderDishes = getOrderDishesStr(orders);
+                orderVO.setOrderDishes(orderDishes);
+                orderVOList.add(orderVO);
+            }
+    }
+    return orderVOList;
 }
+
+    /**
+     * 根据订单id获取菜品信息字符串
+     * @param orders
+     * @return
+     */
+    private String getOrderDishesStr(Orders orders) {
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
+        List<String> orderDishList = orderDetailList.stream().map(x -> {
+            String orderDish = x.getName()+"*"+x.getNumber()+";";
+            return orderDish;
+        }).collect(Collectors.toList());
+        return String.join("", orderDishList);
+    }
+}
+

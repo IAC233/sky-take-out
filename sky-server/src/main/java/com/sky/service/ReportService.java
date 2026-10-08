@@ -2,6 +2,7 @@ package com.sky.service;
 
 import com.sky.mapper.OrderMapper;
 import com.sky.vo.TurnoverReportVO;
+import com.sky.vo.UserReportVO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -14,5 +15,13 @@ public interface ReportService {
      * @param end
      * @return
      */
-    TurnoverReportVO turnoverStatistics(LocalDate begin, LocalDate end);
+    TurnoverReportVO getTurnoverStatistics(LocalDate begin, LocalDate end);
+
+    /**
+     * 用户量统计
+     * @param begin
+     * @param end
+     * @return
+     */
+    UserReportVO getUserStatistics(LocalDate begin, LocalDate end);
 }
